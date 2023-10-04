@@ -89,7 +89,7 @@ public class TrainService {
 
         if(train.getBookedTickets().size()==0)return 0;
         List<Ticket>ticketList=train.getBookedTickets();
-        int oldPerson=0;
+        int oldPerson=Integer.MIN_VALUE;
 
         for(Ticket ticket:ticketList)
         {
