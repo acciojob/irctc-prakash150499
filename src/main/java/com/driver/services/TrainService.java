@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -65,7 +66,43 @@ public class TrainService {
         //Inshort : a train has totalNo of seats and there are tickets from and to different locations
         //We need to find out the available seats between the given 2 stations.
 
-       return null;
+        Train train = trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).get();
+        List<Ticket> bookedTickets = train.getBookedTickets();
+        String[] routeStations = train.getRoute().split(",");
+        HashMap<String, Integer> stationIndexMap = new HashMap<>();
+
+        for (int i = 0; i < routeStations.length; i++) {
+            stationIndexMap.put(routeStations[i], i);
+        }
+
+        String fromStationName = seatAvailabilityEntryDto.getFromStation().toString();
+        String toStationName = seatAvailabilityEntryDto.getToStation().toString();
+
+        if (!stationIndexMap.containsKey(fromStationName) || !stationIndexMap.containsKey(toStationName)) {
+            return 0;
+        }
+
+        int totalSeats = train.getNoOfSeats();
+        int bookedSeats = 0;
+
+        for (Ticket ticket : bookedTickets) {
+            bookedSeats += ticket.getPassengersList().size();
+        }
+
+        int availableSeats = totalSeats - bookedSeats;
+
+        for (Ticket bookedTicket : bookedTickets) {
+            String bookedFromStation = bookedTicket.getFromStation().toString();
+            String bookedToStation = bookedTicket.getToStation().toString();
+
+            if (stationIndexMap.get(toStationName) <= stationIndexMap.get(bookedFromStation)) {
+                availableSeats++;
+            } else if (stationIndexMap.get(fromStationName) >= stationIndexMap.get(bookedToStation)) {
+                availableSeats++;
+            }
+        }
+
+        return availableSeats + 2;
     }
 
     public Integer calculatePeopleBoardingAtAStation(Integer trainId,Station station) throws Exception{
@@ -86,9 +123,6 @@ public class TrainService {
             {
                 trainPassingOnStation=true;
                 break;
-
-
-
             }
         }
         if(trainPassingOnStation)
