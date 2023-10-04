@@ -71,7 +71,7 @@ public class TicketService {
             String []route=train.getRoute().split(",");
             for(int i=0;i<route.length;i++)
             {
-                if(route[i].equals(bookTicketEntryDto.getFromStation()))
+                if(route[i].equals(bookTicketEntryDto.getFromStation().toString()))
                 {
                     startStation=i;
                     break;
@@ -80,7 +80,7 @@ public class TicketService {
 
         for(int i=0;i<route.length;i++)
         {
-            if(route[i].equals(bookTicketEntryDto.getToStation()))
+            if(route[i].equals(bookTicketEntryDto.getToStation().toString()))
             {
                 endStation=i;
                 break;
