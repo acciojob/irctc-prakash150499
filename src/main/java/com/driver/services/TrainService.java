@@ -99,7 +99,7 @@ public class TrainService {
                 oldPerson=Math.max(oldPerson,passenger.getAge());
             }
         }
-        return 0;
+        return oldPerson;
     }
 
     public List<Integer> trainsBetweenAGivenTime(Station station, LocalTime startTime, LocalTime endTime){
