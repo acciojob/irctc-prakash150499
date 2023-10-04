@@ -26,7 +26,32 @@ public class TrainService {
         //and route String logic to be taken from the Problem statement.
         //Save the train and return the trainId that is generated from the database.
         //Avoid using the lombok library
-        return null;
+
+        Train train=new Train();
+        train.setNoOfSeats(trainEntryDto.getNoOfSeats());
+        train.setDepartureTime(trainEntryDto.getDepartureTime());
+        String route= stationListToString(trainEntryDto.getStationRoute());
+        train.setRoute(route);
+        Train train1=trainRepository.save(train);
+
+
+    return train1.getTrainId();
+    }
+
+    private String stationListToString(List<Station> stationRoute) {
+        String route="";
+
+        for(int i=0;i<stationRoute.size();i++)
+        {
+            route+=stationRoute.get(i).toString();
+
+            if (i != stationRoute.size() - 1) {
+                route += ",";
+            }
+
+        }
+        return route;
+
     }
 
     public Integer calculateAvailableSeats(SeatAvailabilityEntryDto seatAvailabilityEntryDto){
@@ -60,6 +85,18 @@ public class TrainService {
         //We need to find out the age of the oldest person that is travelling the train
         //If there are no people travelling in that train you can return 0
 
+        Train train=trainRepository.findById(trainId).get();
+        List<Ticket>ticketList=train.getBookedTickets();
+        int oldPerson=0;
+
+        for(Ticket ticket:ticketList)
+        {
+            List<Passenger>passengerList=ticket.getPassengersList();
+            for(Passenger passenger:passengerList)
+            {
+                oldPerson=Math.max(oldPerson,passenger.getAge());
+            }
+        }
         return 0;
     }
 
@@ -71,7 +108,36 @@ public class TrainService {
         //in problem statement)
         //You can also assume the seconds and milli seconds value will be 0 in a LocalTime format.
 
-        return null;
+        List<Integer> trainList=new ArrayList<>();
+
+        List<Train>trains=trainRepository.findAll();
+
+        for(Train train:trains)
+        {
+            String[] route=train.getRoute().split(",");
+
+            for(int i=0;i<route.length;i++)
+            {
+                if(route[i].equals(String.valueOf(station)))
+                {
+                    int startTimeInMin=startTime.getHour()*60+startTime.getMinute();
+                    int endTimeInMin=endTime.getHour()*60+endTime.getMinute();
+
+                    int departTimeInMin=train.getDepartureTime().getHour()*60+train.getDepartureTime().getMinute();
+                    int timeAtGivenStation=departTimeInMin+(i*60);
+
+                    if(timeAtGivenStation<=endTimeInMin&&timeAtGivenStation>=startTimeInMin)
+                    {
+
+                        trainList.add(train.getTrainId());
+                    }
+
+
+                }
+            }
+        }
+
+        return trainList;
     }
 
 }

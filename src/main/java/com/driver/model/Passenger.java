@@ -14,24 +14,18 @@ import java.util.List;
 @Table(name = "passenger")
 public class Passenger {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int passengerId;
-
     private String name;
-
     private int age;
-
     //passengers and tickets are many to manny
-
-    public Passenger() {
-    }
-
     @ManyToMany
     @JoinColumn
     private List<Ticket> bookedTickets;
 
+    public Passenger() {
+    }
     public Passenger(int passengerId, String name, int age, List<Ticket> bookedTickets) {
         this.passengerId = passengerId;
         this.name = name;
