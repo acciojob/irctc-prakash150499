@@ -86,6 +86,8 @@ public class TrainService {
         //If there are no people travelling in that train you can return 0
 
         Train train=trainRepository.findById(trainId).get();
+
+        if(train.getBookedTickets().size()==0)return 0;
         List<Ticket>ticketList=train.getBookedTickets();
         int oldPerson=0;
 
