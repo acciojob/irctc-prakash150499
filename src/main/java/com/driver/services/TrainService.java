@@ -112,39 +112,33 @@ public class TrainService {
         //throw new Exception("Train is not passing from this station");
         //  in a happy case we need to find out the number of such people.
 
-        Train train=trainRepository.findById(trainId).get();
+        Train selectedTrain = trainRepository.findById(trainId).get();
+        String requestedStation = station.toString();
+        String[] routeStations = selectedTrain.getRoute().split(",");
+        boolean isStationFound = false;
 
-        String route[]=train.getRoute().split(",");
-        boolean trainPassingOnStation=false;
-        int totalPassengerAtTheStation=0;
-        for(int i=0;i<route.length;i++)
-        {
-            if(route[i].equals(station.toString()))
-            {
-                trainPassingOnStation=true;
+        for (String stationName : routeStations) {
+            if (stationName.equals(requestedStation)) {
+                isStationFound = true;
                 break;
             }
         }
-        if(trainPassingOnStation)
-        {
-            List<Ticket>ticketList=train.getBookedTickets();
-            for(Ticket ticket:ticketList)
-            {
-                if(ticket.getFromStation().equals(station.toString()))
-                {
-                    totalPassengerAtTheStation+=ticket.getPassengersList().size();
-                }
+
+        if (!isStationFound) {
+            throw new Exception("Train is not passing through this station");
+        }
+
+        int totalPassengersAtStation = 0;
+        List<Ticket> bookedTickets = selectedTrain.getBookedTickets();
+
+        for (Ticket ticket : bookedTickets) {
+            if (ticket.getFromStation().toString().equals(requestedStation)) {
+                totalPassengersAtStation += ticket.getPassengersList().size();
             }
-
-        }
-        else
-        {
-            throw new Exception("Train is not passing from this station");
         }
 
+        return totalPassengersAtStation;
 
-
-        return  totalPassengerAtTheStation;
     }
 
     public Integer calculateOldestPersonTravelling(Integer trainId){
